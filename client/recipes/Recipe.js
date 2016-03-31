@@ -1,14 +1,26 @@
-Template.RecipeSingle.onCreated(function(){
-	var self = this;
-	self.autorun(function(){
-		var id = FlowRouter.getParam('id');
-		self.subscribe('singleRecipe', id);
-	});
+Template.Recipe.onCreated(function(){
+	this.editMode = new ReactiveVar(false);
 });
 
-Template.RecipeSingle.helpers({
-	recipe: ()=> {
-		var id = FlowRouter.getParam('id');
-		return Recipes.findOne({ _id: id });
+Template.Recipe.helpers({
+	updateRecipeId: function() {
+		return this._id;
+	},
+	editMode: function() {
+		return Template.instance().editMode.get();
+	}
+});
+
+
+Template.Recipe.events({
+	'click .toggle-menu': function() {
+		Meteor.call('toggleMenuItem', this._id, this.inMenu);
+	},
+	'click .fa-trash': function() {
+		Meteor.call('deleteRecipe', this._id);
+	},
+	'click .fa-pencil': function(event, template) {
+		//Session.set('editMode', !Session.get('editMode'));
+		template.editMode.set(!template.editMode.get());
 	}
 });
